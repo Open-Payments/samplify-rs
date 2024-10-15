@@ -123,10 +123,10 @@ pub fn sampleable_derive(input: TokenStream) -> TokenStream {
         });
     }
 
-    // Generate the sample_with_config method
+    // Generate the sample method
     let sample_method = quote! {
         impl #struct_name {
-            pub fn sample_with_config(config: &serde_json::Map<String, serde_json::Value>) -> Result<Self, String> {
+            pub fn sample(config: &serde_json::Map<String, serde_json::Value>) -> Result<Self, String> {
                 use rand::Rng;
                 use rand::seq::SliceRandom;
 

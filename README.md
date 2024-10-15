@@ -52,7 +52,7 @@ struct PaymentInstruction {
 ```rust
 use samplify_rs::Sampleable;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map};
+use serde_json;
 
 #[derive(Debug, Serialize, Deserialize, Sampleable)]
 struct PaymentInstruction {
@@ -61,12 +61,14 @@ struct PaymentInstruction {
 }
 
 fn main() -> Result<(), String> {
-    let mut config = Map::new();
-
-    config.insert("amount".to_string(), json!([10.0, 1000.0]));
-    config.insert("currency".to_string(), json!(["USD", "EUR", "GBP"]));
-
-    let sample_payment = PaymentInstruction::sample_with_config(&config)?;
+    let config_json = r#"
+    {
+        "amount": [10.0, 1000.0],
+        "currency": ["USD", "EUR", "GBP"]
+    }
+    "#;
+    let config_map: serde_json::Map<String, serde_json::Value> = serde_json::from_str(config_json).map_err(|e| e.to_string())?;
+    let sample_payment = PaymentInstruction::sample(&config_map)?;
 
     println!("{:?}", sample_payment);
 

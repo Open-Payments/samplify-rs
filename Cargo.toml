@@ -2,9 +2,15 @@
 name = "samplify-rs"
 version = "0.1.0"
 edition = "2021"
+exclude = [".DS_Store", "/target", ".vscode"]
+authors = ["Harishankar Narayanan <nharishankar@gmail.com>"]
+license = "Apache-2.0"
 description = "A procedural macro to generate sample data for Rust structs."
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/yourusername/samplify-rs"
+readme = "README.md"
+homepage = "https://github.com/Open-Payments/samplify-rs"
+repository = "https://github.com/Open-Payments/samplify-rs"
+keywords = ["Sample generator", "Mock data", "Testing", "Data generator"]
+categories = ["data-structures", "development-tools"]
 
 [lib]
 proc-macro = true
