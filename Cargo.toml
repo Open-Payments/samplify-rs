@@ -9,7 +9,7 @@ description = "A procedural macro to generate sample data for Rust structs."
 readme = "README.md"
 homepage = "https://github.com/Open-Payments/samplify-rs"
 repository = "https://github.com/Open-Payments/samplify-rs"
-keywords = ["Sample generator", "Mock data", "Testing", "Data generator"]
+keywords = ["sample", "generator", "Mock", "Testing", "Data"]
 categories = ["data-structures", "development-tools"]
 
 [lib]
