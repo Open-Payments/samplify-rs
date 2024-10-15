@@ -17,7 +17,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install cargo-release
-        run: cargo install cargo-release
+        uses: dtolnay/install@master
+        with:
+          crate: cargo-release
 
       - name: Configure git
         run: |
