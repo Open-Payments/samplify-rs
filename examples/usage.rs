@@ -21,9 +21,15 @@ struct User {
     name: String,
     age: u32,
     address: Vec<Address>,
-    email: Option<String>,
+    email: Option<Box<Email>>,
     preferences: Vec<String>,
     status: Status,
+}
+
+#[derive(Debug, Serialize, Deserialize, Sampleable)]
+struct Email {
+    account: String,
+    domain: String,
 }
 
 fn main() -> Result<(), String> {
@@ -43,7 +49,10 @@ fn main() -> Result<(), String> {
                 "zipcode": ["60601", "94101"]
             }
         ],
-        "email": null,
+        "email": {
+            "account": ["hari", "shankar", "harishankar"],
+            "domain": ["gmail.com", "hotmail.com"]
+        },
         "preferences": ["news", "updates", "offers", "events"],
         "status": {
             "variants": ["Active", "Inactive", "Suspended"],

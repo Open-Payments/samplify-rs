@@ -214,6 +214,13 @@ fn generate_sample_code(field_type: &Type, field_name_str: &str, config_var: &pr
                 #inner_sample_code
             }
         }
+    } else if is_box(field_type) {
+        let inner_type = get_inner_type(field_type);
+        let inner_sample_code = generate_sample_code(&inner_type, field_name_str, config_var);
+        
+        quote! {
+            Box::new(#inner_sample_code)
+        }
     } else if is_primitive(field_type) {
         generate_primitive_sample_code(field_type, field_name_str, config_var)
     } else {
@@ -346,6 +353,13 @@ fn is_primitive(ty: &Type) -> bool {
             let ident = &type_path.path.segments.last().unwrap().ident;
             ["f64", "f32", "i32", "i64", "u32", "u64", "usize", "isize", "String", "bool"].contains(&ident.to_string().as_str())
         }
+        _ => false,
+    }
+}
+
+fn is_box(ty: &Type) -> bool {
+    match ty {
+        Type::Path(type_path) => type_path.path.segments.last().unwrap().ident == "Box",
         _ => false,
     }
 }
