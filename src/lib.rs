@@ -52,7 +52,6 @@ fn expand_struct(name: syn::Ident, data_struct: syn::DataStruct) -> TokenStream 
             pub fn sample_with_config(config: &serde_json::Map<String, serde_json::Value>) -> Result<Self, String> {
                 use rand::Rng;
                 use rand::seq::SliceRandom;
-                use serde_json::Value;
 
                 Ok(Self {
                     #(#field_samples),*
@@ -101,7 +100,7 @@ fn expand_enum(name: syn::Ident, data_enum: syn::DataEnum) -> TokenStream {
 
                 quote! {
                     #variant_name_str => {
-                        if let Some(Value::Object(variant_data)) = variant_config.get(#variant_name_str) {
+                        if let Some(serde_json::Value::Object(variant_data)) = variant_config.get(#variant_name_str) {
                             #name::#variant_name {
                                 #(#field_samples),*
                             }
@@ -126,7 +125,7 @@ fn expand_enum(name: syn::Ident, data_enum: syn::DataEnum) -> TokenStream {
 
                 quote! {
                     #variant_name_str => {
-                        if let Some(Value::Object(variant_data)) = variant_config.get(#variant_name_str) {
+                        if let Some(serde_json::Value::Object(variant_data)) = variant_config.get(#variant_name_str) {
                             #name::#variant_name(
                                 #(#field_samples),*
                             )
@@ -145,10 +144,9 @@ fn expand_enum(name: syn::Ident, data_enum: syn::DataEnum) -> TokenStream {
             pub fn sample_with_config(config: &serde_json::Map<String, serde_json::Value>) -> Result<Self, String> {
                 use rand::Rng;
                 use rand::seq::SliceRandom;
-                use serde_json::Value;
 
                 // Get the list of allowed variants from the config
-                let variants: Vec<String> = if let Some(Value::Array(variant_array)) = config.get("variants") {
+                let variants: Vec<String> = if let Some(serde_json::Value::Array(variant_array)) = config.get("variants") {
                     variant_array.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect()
                 } else {
                     {
@@ -167,7 +165,7 @@ fn expand_enum(name: syn::Ident, data_enum: syn::DataEnum) -> TokenStream {
                 let selected_variant = variants.choose(&mut rand::thread_rng()).unwrap();
 
                 // Get the 'variant_data' from the config
-                let variant_config = if let Some(Value::Object(map)) = config.get("variant_data") {
+                let variant_config = if let Some(serde_json::Value::Object(map)) = config.get("variant_data") {
                     map
                 } else {
                     &serde_json::Map::new()
@@ -227,7 +225,7 @@ fn generate_sample_code(field_type: &Type, field_name_str: &str, config_var: &pr
         // Assume it's a nested struct or enum that implements Sampleable.
         quote! {
             {
-                if let Some(Value::Object(map)) = #config_var.get(#field_name_str) {
+                if let Some(serde_json::Value::Object(map)) = #config_var.get(#field_name_str) {
                     <#field_type>::sample_with_config(map)?
                 } else {
                     return Err(format!("Configuration for '{}' must be an object", #field_name_str));
@@ -267,7 +265,7 @@ fn generate_sample_code_for_vec_elements(element_type: &Type, field_name_str: &s
         quote! {
             {
                 if let Some(config_value) = #config_var.get(#field_name_str) {
-                    if let Value::Array(values_array) = config_value {
+                    if let serde_json::Value::Array(values_array) = config_value {
                         let values: Vec<#element_type> = values_array.iter()
                             .filter_map(|v| #parse_value)
                             .collect();
@@ -293,10 +291,10 @@ fn generate_sample_code_for_vec_elements(element_type: &Type, field_name_str: &s
         quote! {
             {
                 if let Some(config_value) = #config_var.get(#field_name_str) {
-                    if let Value::Array(array) = config_value {
+                    if let serde_json::Value::Array(array) = config_value {
                         let mut vec = Vec::new();
                         for item in array {
-                            if let Value::Object(item_config) = item {
+                            if let serde_json::Value::Object(item_config) = item {
                                 vec.push(<#element_type>::sample_with_config(&item_config)?);
                             } else {
                                 return Err(format!("Each item in '{}' must be an object", #field_name_str));
